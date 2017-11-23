@@ -24,14 +24,20 @@
                     : new THREE.OrbitControls(camera);
                 renderer	= new THREE.WebGLRenderer(),
                 r			= ()=>Math.random();
+
             scene.background	= new THREE.Color(0xffccff);
+            scene.fog           = new THREE.FogExp2(0xffccff,0.008);
+
             camera.position.x	=
             camera.position.z	=
             camera.position.y	= 50;
+
             controls.maxPolarAngle = Math.PI/2;
+
             renderer.setSize(window.innerWidth,window.innerHeight);
             renderer.shadowMap.enabled = true;
             renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+
             document.body.appendChild(renderer.domElement);
 
             //  Add Ground
@@ -63,9 +69,6 @@
             scene.add(light);
             var light2 = new THREE.AmbientLight(0xffffff,0.95);
             scene.add(light2);
-
-            //var helper = new THREE.CameraHelper( light.shadow.camera );
-            //scene.add( helper );
 
 			//	Rendering Loop
 			(render	= ()=>{
