@@ -25,8 +25,8 @@
                 renderer	= new THREE.WebGLRenderer(),
                 r			= ()=>Math.random();
 
-            scene.background	= new THREE.Color(0xffccff);
-            scene.fog           = new THREE.FogExp2(0xffccff,0.008);
+            scene.background	= new THREE.Color(0xffcccc);
+            scene.fog           = new THREE.FogExp2(0xffcccc,0.008);
 
             camera.position.x	=
             camera.position.z	=
@@ -43,7 +43,7 @@
             //  Add Ground
             var gnd_geo = new THREE.PlaneGeometry(600,600),
                 gnd_mat = new THREE.MeshStandardMaterial({
-                    color:0xffccff,
+                    color:0xffcccc,
                     roughness:1,
                     metalness:0,
                     emmissive:0
@@ -57,7 +57,7 @@
 
             //  Add Cube
             var geometry = new THREE.BoxGeometry(20, 20, 20),
-                material = new THREE.MeshLambertMaterial({color:0xffccff}),
+                material = new THREE.MeshLambertMaterial({color:0xffcccc}),
                 cube = new THREE.Mesh(geometry, material);
             cube.castShadow = true;
             scene.add(cube);
