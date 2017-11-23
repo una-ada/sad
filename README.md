@@ -1,2 +1,1 @@
-# sad
-im @ sad . moe
+):
