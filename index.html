@@ -48,7 +48,7 @@
             //  Add Ground
             var gnd_geo = new THREE.PlaneGeometry(600,600),
                 gnd_mat = new THREE.MeshStandardMaterial({
-                    color:0xffcccc,
+                    color:0xffc8c8,
                     roughness:1,
                     metalness:0,
                     emmissive:0
@@ -62,13 +62,13 @@
 
             //  Add Cube
             var geometry = new THREE.BoxGeometry(20, 20, 20),
-                material = new THREE.MeshLambertMaterial({color:0xffcccc}),
+                material = new THREE.MeshLambertMaterial({color:0xffc0c0}),
                 cube = new THREE.Mesh(geometry, material);
             cube.castShadow = true;
             scene.add(cube);
 
             //  Add Lighting
-            var light = new THREE.PointLight(0xffffff,0.1);
+            var light = new THREE.PointLight(0xffffff,0.15);
             light.position.set(
                 (-50)+(Math.random()*100),
                 100,
