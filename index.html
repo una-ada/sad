@@ -64,7 +64,11 @@
 
             //  Add Lighting
             var light = new THREE.PointLight(0xffffff,0.1);
-            light.position.set(20, 100, -30);
+            light.position.set(
+                (-50)+(Math.random()*100),
+                100,
+                (-50)+(Math.random()*100)
+            );
             light.castShadow = true;
             scene.add(light);
             var light2 = new THREE.AmbientLight(0xffffff,0.95);
