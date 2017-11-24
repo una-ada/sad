@@ -13,7 +13,7 @@
 		<style>
 			html,body{margin:0;padding:0;overflow:hidden;}
             div.caption{
-                color:white;
+                color:#fff0f0;
                 font-family:'Playfair Display',serif;
                 font-size:8rem;
                 left:calc(50vw + 100px);
@@ -49,9 +49,9 @@
             scene.background	= new THREE.Color(0xffcccc);
             scene.fog           = new THREE.FogExp2(0xffcccc,0.008);
 
-            camera.position.x	=
-            camera.position.z	=
-            camera.position.y	= 50;
+            camera.position.x	= 40;
+            camera.position.y	= 25;
+            camera.position.z	= 75;
 
             controls.maxPolarAngle = Math.PI/2;
 
@@ -88,7 +88,7 @@
             light.position.set(
                 (-50)+(Math.random()*100),
                 100,
-                (-50)+(Math.random()*100)
+                (Math.random()*50)
             );
             light.castShadow = true;
             scene.add(light);
