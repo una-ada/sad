@@ -14,6 +14,7 @@
 		</style>
 		<script src="lib/dep.js"></script>
 		<script src="lib/three.min.js"></script>
+		<script src="lib/PointerLockControls.js"></script>
 	</head>
     <body>
         <script>
@@ -22,14 +23,15 @@
                 scene		= new THREE.Scene(),
                 aspect		= window.innerWidth/window.innerHeight,
                 camera		= new THREE.PerspectiveCamera(75,aspect,0.1,1e3),
-				m			= window.mobilecheck(),
-                renderer	= new THREE.WebGLRenderer(),
+                camcon      = new THREE.PointerLockControls(camera),
+				renderer	= new THREE.WebGLRenderer(),
                 r			= ()=>Math.random();
             scene.background	= new THREE.Color(0xffcccc);
-            scene.fog           = new THREE.FogExp2(0xffcccc,0.008);
-            camera.position.x	= m?0:40;
-            camera.position.y	= 25;
-            camera.position.z	= 75;
+            scene.fog           = new THREE.FogExp2(0xffcccc,0.16);
+            scene.add(camcon.getObject());
+            camcon.getObject().position.x	= 2;
+            camcon.getObject().position.y	= 1.5;
+            camcon.getObject().position.z	= 4;
             renderer.setSize(window.innerWidth,window.innerHeight);
             renderer.shadowMap.enabled = true;
             renderer.shadowMap.type = THREE.PCFSoftShadowMap;
@@ -54,21 +56,11 @@
                     if(document.pointerLockElement===element
                     || document.mozPointerLockElement===element
                     || document.webkitPointerLockElement===element)
-                        document.addEventListener('mousemove',movecb,!1);
+                        camcon.enabled = true;
                     else {
-                        document.removeEventListener('mousemove',movecb,!1);
+                        camcon.enabled = false;
                         //unlockHook(this.element);
                     }
-                },
-                movecb      = (e)=>{
-                    controls.mouseX +=  e.movementX
-                                    || e.mozMovementX
-                                    || e.webkitMovementX
-                                    || 0,
-                    controls.mouseY +=  e.movementY
-                                    || e.mozMovementY
-                                    || e.webkitMovementY
-                                    || 0;
                 },
                 ercb        = (e)=>{
                     alert("Oh no.");
@@ -80,19 +72,15 @@
             document.addEventListener('pointerlockerror',ercb,!1);
             document.addEventListener('mozpointerlockerror',ercb,!1);
             document.addEventListener('webkitpointerlockerror',ercb,!1);
-            document.addEventListener('mousemove',movecb,!1);
+            //document.addEventListener('mousemove',movecb,!1);
             var controls = {
-                mouseX : 0,
-                mouseY : 0,
-                sensitivity : 1e-3,
-                cameraSpeed : 1,
+                cameraSpeed : 0.1,
                 keys : {W:0,A:0,S:0,D:0},
                 update(){
                     //  Position controls
-                    var fwd         = (new THREE.Vector3(0,0,-1)).applyQuaternion(camera.quaternion),
-                        pos         = camera.position.clone(),
+                    var fwd         = (new THREE.Vector3(0,0,-1)).applyQuaternion(camcon.getObject().quaternion),
+                        pos         = camcon.getObject().position.clone(),
                         str         = fwd.clone().cross(camera.up),
-                        strc        = str.clone(),
                         speed       = this.cameraSpeed,
                         fwdscale    = (this.keys.W-this.keys.S)*speed,
                         strscale    = (this.keys.D-this.keys.A)*speed;
@@ -100,25 +88,7 @@
                     str.multiplyScalar(strscale);
                     pos.add(fwd);
                     pos.add(str);
-                    camera.position.set(pos.x,pos.y,pos.z);
-
-                    //  Rotation controls
-                    var yaw     = new THREE.Quaternion(),
-                        pit     = new THREE.Quaternion(),
-                        look    = camera.quaternion.clone();
-                    yaw.setFromAxisAngle(
-                        camera.up,
-                        -controls.sensitivity*this.mouseX
-                    );
-                    pit.setFromAxisAngle(
-                        strc,
-                        -controls.sensitivity*this.mouseY
-                    );
-                    look.multiply(yaw);
-                    look.multiply(pit);
-                    camera.quaternion.set(look._x,look._y,look._z,look._w);
-                    this.mouseX = 0;
-                    this.mouseY = 0;
+                    camcon.getObject().position.set(pos.x,1.5,pos.z);
                 }
             }
             document.addEventListener('keydown',(e)=>{
@@ -147,26 +117,26 @@
                     emissive:0
                 }),
                 plane     = new THREE.Mesh(gnd_geo,gnd_mat);
-            plane.position.y = -10;
+            plane.position.y = 0;
             plane.rotation.x = -Math.PI/2;
             plane.doubleSided = true;
             plane.receiveShadow = true;
             scene.add(plane);
 
             //  Add Cube
-            var geometry = new THREE.BoxGeometry(20, 20, 20),
+            var geometry = new THREE.BoxGeometry(1, 1, 1),
                 material = new THREE.MeshLambertMaterial({color:0xffc0c0}),
                 cube = new THREE.Mesh(geometry, material);
-			if(m) cube.rotation.y = -Math.PI/6;
+            cube.position.y = 0.5;
             cube.castShadow = true;
             scene.add(cube);
 
             //  Add Lighting
             var light = new THREE.PointLight(0xffffff,0.15);
             light.position.set(
-                (-50)+(Math.random()*100),
-                100,
-                (Math.random()*50)
+                (-2.5)+(Math.random()*5),
+                5,
+                (Math.random()*2.5)
             );
             light.castShadow = true;
             scene.add(light);
@@ -179,7 +149,7 @@
 				requestAnimationFrame(render);
                 //	Scene Control
                 controls.update();
-				renderer.render(scene,camera);
+                renderer.render(scene,camera);
 			})();
 
 			//	Handle Resize
