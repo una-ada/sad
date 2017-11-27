@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<!--
+  -     sad.moe
+  -     Written by Trevor Hoglund (@trewbot)
+  -     2017.11.23
+  -->
+<html>
+	<head>
+		<title>):</title>
+		<meta charset="utf-8">
+		<meta name="viewport" content="user-scalable=no, initial-scale=1, width=device-width">
+        <link href="https://fonts.googleapis.com/css?family=Playfair+Display:900i" rel="stylesheet">
+		<style>
+			html,body{margin:0;padding:0;overflow:hidden;}
+            div.caption{
+                color:#fff0f0;
+                font-family:'Playfair Display',serif;
+                font-size:8rem;
+                left:calc(50vw + 100px);
+                position:fixed;
+                top:calc(50vh - 6rem);
+                z-index:100;
+            }
+            @media print, screen and (max-width:1000px){
+                div.caption{
+                    display:none;
+                }
+            }
+		</style>
+		<script src="lib/dep.js"></script>
+		<script src="lib/three.min.js"></script>
+		<script src="lib/OrbitControls.js"></script>
+		<script src="lib/DeviceOrientationControls.js"></script>
+	</head>
+    <body>
+        <div class="caption">alone.</div>
+        <script>
+            //	Scene Setup
+            const
+                scene		= new THREE.Scene(),
+                aspect		= window.innerWidth/window.innerHeight,
+                camera		= new THREE.PerspectiveCamera(75,aspect,0.1,1e3),
+				m			= window.mobilecheck(),
+                controls	= m
+                    ? new THREE.DeviceOrientationControls(camera)
+                    : new THREE.OrbitControls(camera);
+                renderer	= new THREE.WebGLRenderer(),
+                r			= ()=>Math.random();
+
+            scene.background	= new THREE.Color(0xffcccc);
+            scene.fog           = new THREE.FogExp2(0xffcccc,0.008);
+
+            camera.position.x	= m?0:40;
+            camera.position.y	= 25;
+            camera.position.z	= 75;
+
+            controls.maxPolarAngle = Math.PI/2;
+
+            renderer.setSize(window.innerWidth,window.innerHeight);
+            renderer.shadowMap.enabled = true;
+            renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+
+            document.body.appendChild(renderer.domElement);
+
+            //  Add Ground
+            var gnd_geo = new THREE.PlaneGeometry(600,600),
+                gnd_mat = new THREE.MeshStandardMaterial({
+                    color:0xffc8c8,
+                    roughness:1,
+                    metalness:0,
+                    emmissive:0
+                }),
+                plane     = new THREE.Mesh(gnd_geo,gnd_mat);
+            plane.position.y = -10;
+            plane.rotation.x = -Math.PI/2;
+            plane.doubleSided = true;
+            plane.receiveShadow = true;
+            scene.add(plane);
+
+            //  Add Cube
+            var geometry = new THREE.BoxGeometry(20, 20, 20),
+                material = new THREE.MeshLambertMaterial({color:0xffc0c0}),
+                cube = new THREE.Mesh(geometry, material);
+			if(m) cube.rotation.y = -Math.PI/6;
+            cube.castShadow = true;
+            scene.add(cube);
+
+            //  Add Lighting
+            var light = new THREE.PointLight(0xffffff,0.15);
+            light.position.set(
+                (-50)+(Math.random()*100),
+                100,
+                (Math.random()*50)
+            );
+            light.castShadow = true;
+            scene.add(light);
+            var light2 = new THREE.AmbientLight(0xffffff,0.95);
+            scene.add(light2);
+
+			//	Rendering Loop
+			(render	= ()=>{
+				//	Loop
+				requestAnimationFrame(render);
+			    //	Scene Control
+				controls.update();
+				renderer.render(scene,camera);
+			})();
+
+			//	Handle Resize
+			if(!window.mobilecheck())window.addEventListener('resize',()=>{
+				camera.aspect = window.innerWidth / window.innerHeight;
+				camera.updateProjectionMatrix();
+				renderer.setSize( window.innerWidth, window.innerHeight );
+			},!1);
+        </script>
+    </body>
+</html>

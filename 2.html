@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<!--
+  -     sad.moe
+  -     Written by Trevor Hoglund (@trewbot)
+  -     2017.11.27
+  -->
+<html>
+	<head>
+		<title>):</title>
+		<meta charset="utf-8">
+		<meta name="viewport" content="user-scalable=no, initial-scale=1, width=device-width">
+        <style>
+			html,body{margin:0;padding:0;overflow:hidden;}
+		</style>
+		<script src="lib/dep.js"></script>
+		<script src="lib/three.min.js"></script>
+	</head>
+    <body>
+        <script>
+            //	Scene Setup
+            const
+                scene		= new THREE.Scene(),
+                aspect		= window.innerWidth/window.innerHeight,
+                camera		= new THREE.PerspectiveCamera(75,aspect,0.1,1e3),
+				m			= window.mobilecheck(),
+                renderer	= new THREE.WebGLRenderer(),
+                r			= ()=>Math.random();
+            scene.background	= new THREE.Color(0xffcccc);
+            scene.fog           = new THREE.FogExp2(0xffcccc,0.008);
+            camera.position.x	= m?0:40;
+            camera.position.y	= 25;
+            camera.position.z	= 75;
+            renderer.setSize(window.innerWidth,window.innerHeight);
+            renderer.shadowMap.enabled = true;
+            renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+            document.body.appendChild(renderer.domElement);
+
+            //  Pointerlock Setup
+            var element         = renderer.domElement;
+            element.requestPointerLock  =  element.requestPointerLock
+                                        || element.mozRequestPointerLock
+                                        || element.webkitRequestPointerLock;
+            element.addEventListener('mousedown',()=>{
+                element.requestPointerLock()
+            },!1);
+            document.exitPointerLock    =  document.exitPointerLock
+                                        || document.mozExitPointerLock
+                                        || document.webkitExitPointerLock;
+            const
+                pl          =  'pointerLockElement' in document
+                            || 'mozPointerLockElement' in document
+                            || 'webkitPointerLockElement' in document,
+                plcb        = (e)=>{
+                    if(document.pointerLockElement===element
+                    || document.mozPointerLockElement===element
+                    || document.webkitPointerLockElement===element)
+                        document.addEventListener('mousemove',movecb,!1);
+                    else {
+                        document.removeEventListener('mousemove',movecb,!1);
+                        //unlockHook(this.element);
+                    }
+                },
+                movecb      = (e)=>{
+                    controls.mouseX +=  e.movementX
+                                    || e.mozMovementX
+                                    || e.webkitMovementX
+                                    || 0,
+                    controls.mouseY +=  e.movementY
+                                    || e.mozMovementY
+                                    || e.webkitMovementY
+                                    || 0;
+                },
+                ercb        = (e)=>{
+                    alert("Oh no.");
+                    console.error(e);
+                };
+            document.addEventListener('pointerlockchange',plcb,!1);
+            document.addEventListener('mozpointerlockchange',plcb,!1);
+            document.addEventListener('webkitpointerlockchange',plcb,!1);
+            document.addEventListener('pointerlockerror',ercb,!1);
+            document.addEventListener('mozpointerlockerror',ercb,!1);
+            document.addEventListener('webkitpointerlockerror',ercb,!1);
+            document.addEventListener('mousemove',movecb,!1);
+            var controls = {
+                mouseX : 0,
+                mouseY : 0,
+                sensitivity : 1e-3,
+                cameraSpeed : 1,
+                keys : {W:0,A:0,S:0,D:0},
+                update(){
+                    //  Position controls
+                    var fwd         = (new THREE.Vector3(0,0,-1)).applyQuaternion(camera.quaternion),
+                        pos         = camera.position.clone(),
+                        str         = fwd.clone().cross(camera.up),
+                        strc        = str.clone(),
+                        speed       = this.cameraSpeed,
+                        fwdscale    = (this.keys.W-this.keys.S)*speed,
+                        strscale    = (this.keys.D-this.keys.A)*speed;
+                    fwd.multiplyScalar(fwdscale);
+                    str.multiplyScalar(strscale);
+                    pos.add(fwd);
+                    pos.add(str);
+                    camera.position.set(pos.x,pos.y,pos.z);
+
+                    //  Rotation controls
+                    var yaw     = new THREE.Quaternion(),
+                        pit     = new THREE.Quaternion(),
+                        look    = camera.quaternion.clone();
+                    yaw.setFromAxisAngle(
+                        camera.up,
+                        -controls.sensitivity*this.mouseX
+                    );
+                    pit.setFromAxisAngle(
+                        strc,
+                        -controls.sensitivity*this.mouseY
+                    );
+                    look.multiply(yaw);
+                    look.multiply(pit);
+                    camera.quaternion.set(look._x,look._y,look._z,look._w);
+                    this.mouseX = 0;
+                    this.mouseY = 0;
+                }
+            }
+            document.addEventListener('keydown',(e)=>{
+                switch(e.key){
+                    case 'w': controls.keys.W = 1; break;
+                    case 'a': controls.keys.A = 1; break;
+                    case 's': controls.keys.S = 1; break;
+                    case 'd': controls.keys.D = 1; break;
+                }
+            },!1);
+            document.addEventListener('keyup',(e)=>{
+                switch(e.key){
+                    case 'w': controls.keys.W = 0; break;
+                    case 'a': controls.keys.A = 0; break;
+                    case 's': controls.keys.S = 0; break;
+                    case 'd': controls.keys.D = 0; break;
+                }
+            },!1);
+
+            //  Add Ground
+            var gnd_geo = new THREE.PlaneGeometry(600,600),
+                gnd_mat = new THREE.MeshStandardMaterial({
+                    color:0xffc8c8,
+                    roughness:1,
+                    metalness:0,
+                    emissive:0
+                }),
+                plane     = new THREE.Mesh(gnd_geo,gnd_mat);
+            plane.position.y = -10;
+            plane.rotation.x = -Math.PI/2;
+            plane.doubleSided = true;
+            plane.receiveShadow = true;
+            scene.add(plane);
+
+            //  Add Cube
+            var geometry = new THREE.BoxGeometry(20, 20, 20),
+                material = new THREE.MeshLambertMaterial({color:0xffc0c0}),
+                cube = new THREE.Mesh(geometry, material);
+			if(m) cube.rotation.y = -Math.PI/6;
+            cube.castShadow = true;
+            scene.add(cube);
+
+            //  Add Lighting
+            var light = new THREE.PointLight(0xffffff,0.15);
+            light.position.set(
+                (-50)+(Math.random()*100),
+                100,
+                (Math.random()*50)
+            );
+            light.castShadow = true;
+            scene.add(light);
+            var light2 = new THREE.AmbientLight(0xffffff,0.95);
+            scene.add(light2);
+
+			//	Rendering Loop
+			(render	= ()=>{
+				//	Loop
+				requestAnimationFrame(render);
+                //	Scene Control
+                controls.update();
+				renderer.render(scene,camera);
+			})();
+
+			//	Handle Resize
+			if(!window.mobilecheck())window.addEventListener('resize',()=>{
+				camera.aspect = window.innerWidth / window.innerHeight;
+				camera.updateProjectionMatrix();
+				renderer.setSize( window.innerWidth, window.innerHeight );
+			},!1);
+        </script>
+    </body>
+</html>
