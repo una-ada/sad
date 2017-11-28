@@ -221,11 +221,11 @@
 		<!-- Movement Controls -->
 		<script>
 			CONTROL.Move = {
-				speed : 0.03,
+				speed : 0.042,
 				update(){
 					//  Position controls
-					var fwd         = (new THREE.Vector3(0,0,-1)).applyQuaternion(camcon.getObject().quaternion),
-						pos         = camcon.getObject().position.clone(),
+					var fwd         = (new THREE.Vector3(0,0,-1)).applyQuaternion(head().quaternion),
+						pos         = head().position.clone(),
 						str         = fwd.clone().cross(camera.up),
 						speed       = this.speed,
 						fwdscale    = (Math.constrain(
@@ -238,7 +238,7 @@
 					str.multiplyScalar(strscale);
 					pos.add(fwd);
 					pos.add(str);
-					camcon.getObject().position.set(pos.x,1.52,pos.z);
+					head().position.set(pos.x,1.52,pos.z);
 				}
 			}
 		</script>
@@ -255,14 +255,15 @@
                 camcon      = m
                     ? new THREE.DeviceOrientationControls(camera)
                     : new CONTROL.Camera(camera),
+				head		= ()=>{return m?camera:camcon.getObject()},
 				renderer	= new THREE.WebGLRenderer(),
                 r			= ()=>Math.random();
             scene.background	= new THREE.Color(0xffcccc);
             scene.fog           = new THREE.FogExp2(0xffcccc,0.16);
-            scene.add(camcon.getObject());
-            camcon.getObject().position.x	= 2;
-            camcon.getObject().position.y	= 1.5;
-            camcon.getObject().position.z	= 4;
+            scene.add(head());
+            head().position.x	= 2;
+            head().position.y	= 1.5;
+            head().position.z	= 4;
             renderer.setSize(window.innerWidth,window.innerHeight);
             renderer.shadowMap.enabled = true;
             renderer.shadowMap.type = THREE.PCFSoftShadowMap;
