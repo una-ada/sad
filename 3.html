@@ -26,6 +26,7 @@
 		</style>
 		<script src="lib/dep.js"></script>
 		<script src="lib/three.min.js"></script>
+		<script src="lib/DeviceOrientationControls.js"></script>
 		<!-- Controls Setup -->
 		<script>
 			//	Create CONTROL Object
@@ -215,13 +216,13 @@
 		<!-- Movement Controls -->
 		<script>
 			CONTROL.Move = {
-				cameraSpeed : 0.1,
+				speed : 0.03,
 				update(){
 					//  Position controls
 					var fwd         = (new THREE.Vector3(0,0,-1)).applyQuaternion(camcon.getObject().quaternion),
 						pos         = camcon.getObject().position.clone(),
 						str         = fwd.clone().cross(camera.up),
-						speed       = this.cameraSpeed,
+						speed       = this.speed,
 						fwdscale    = (Math.constrain(
 							Math.sum(...CONTROL.binding.forward)
 						,-1,1))*speed,
@@ -232,7 +233,7 @@
 					str.multiplyScalar(strscale);
 					pos.add(fwd);
 					pos.add(str);
-					camcon.getObject().position.set(pos.x,1.5,pos.z);
+					camcon.getObject().position.set(pos.x,1.52,pos.z);
 				}
 			}
 		</script>
@@ -245,7 +246,10 @@
                 scene		= new THREE.Scene(),
                 aspect		= window.innerWidth/window.innerHeight,
                 camera		= new THREE.PerspectiveCamera(75,aspect,0.1,1e3),
-                camcon      = new CONTROL.Camera(camera),
+				m			= window.mobilecheck(),
+                camcon      = m
+                    ? new THREE.DeviceOrientationControls(camera)
+                    : new CONTROL.Camera(camera),
 				renderer	= new THREE.WebGLRenderer(),
                 r			= ()=>Math.random();
             scene.background	= new THREE.Color(0xffcccc);
@@ -259,12 +263,22 @@
             renderer.shadowMap.type = THREE.PCFSoftShadowMap;
             document.body.appendChild(renderer.domElement);
 
+			var paused = !0;
+
             //  Pointerlock Setup
 			var lockscreen = document.getElementsByClassName('caption')[0];
             CONTROL.PointerLock(
 				renderer.domElement,
-				()=>{camcon.enableMouse=!0;lockscreen.style.display='none';},
-				()=>{camcon.enableMouse=!1;lockscreen.style.display='';}
+				()=>{
+					paused=!1;
+					camcon.enableMouse=!0;
+					lockscreen.style.display='none';
+				},
+				()=>{
+					paused=!0;
+					camcon.enableMouse=!1;
+					lockscreen.style.display='';
+				}
 			);
 
             //  Add Ground
@@ -307,10 +321,12 @@
 				//	Loop
 				requestAnimationFrame(render);
                 //	Scene Control
-                CONTROL.gamepadPoll();
-                CONTROL.Move.update();
-				camcon.update();
-                renderer.render(scene,camera);
+				if(!paused){
+	                CONTROL.gamepadPoll();
+	                CONTROL.Move.update();
+					camcon.update();
+				}
+				renderer.render(scene,camera);
 			})();
 
 			//	Handle Resize
