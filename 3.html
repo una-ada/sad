@@ -23,6 +23,11 @@
                 width:100%;
                 z-index:100;
             }
+            @media print, screen and (max-width:1000px){
+                div.caption{
+                    display:none;
+                }
+            }
 		</style>
 		<script src="lib/dep.js"></script>
 		<script src="lib/three.min.js"></script>
@@ -263,7 +268,7 @@
             renderer.shadowMap.type = THREE.PCFSoftShadowMap;
             document.body.appendChild(renderer.domElement);
 
-			var paused = !0;
+			var paused = !m;
 
             //  Pointerlock Setup
 			var lockscreen = document.getElementsByClassName('caption')[0];
@@ -277,7 +282,7 @@
 				()=>{
 					paused=!0;
 					camcon.enableMouse=!1;
-					lockscreen.style.display='';
+					if(!m)lockscreen.style.display='';
 				}
 			);
 
