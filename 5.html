@@ -241,7 +241,7 @@
 						,-1,1))*speed,
 						jumpscale	= (Math.min(
 							Math.sum(...CONTROL.binding.jump)
-						,1))*0.3;
+						,1))*0.12;
 					forward.multiplyScalar(fwdscale);
 					strafe.multiplyScalar(strscale);
 					position.add(forward);
@@ -344,7 +344,7 @@
 			//	Add Physics
 			var PHYSICS = {
 				update(){
-					head().velocity.y -= 9.8 * 20 / 60**2;
+					head().velocity.y -= 0.98 / 60;
 					var isgrounded = onGround().length;
 					if(isgrounded){
 						head().position.y = onGround()[0].point.y + 1.52;
