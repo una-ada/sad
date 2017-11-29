@@ -33,6 +33,15 @@
 		<script src="lib/dep.js"></script>
 		<script src="lib/three.min.js"></script>
 		<script src="lib/DeviceOrientationControls.js"></script>
+		<!-- Player Setup -->
+		<script>
+			var PLAYER		= {
+				height		: 1.52,
+				jump		: 0.12,
+				step		: 0.5,
+				walking		: 0.07
+			}
+		</script>
 		<!-- Controls Setup -->
 		<script>
 			//	Create CONTROL Object
@@ -226,13 +235,12 @@
 		<!-- Movement Controls -->
 		<script>
 			CONTROL.Move = {
-				speed : 0.042,
 				update(){
 					//  Position controls
 					var position    = head().position.clone(),
 						forward     = (new THREE.Vector3(0,0,-1)).applyQuaternion(head().quaternion),
 						strafe      = forward.clone().cross(camera.up),
-						speed       = this.speed,
+						speed       = PLAYER.walking,
 						fwdscale    = (Math.constrain(
 							Math.sum(...CONTROL.binding.forward)
 						,-1,1)),
@@ -241,7 +249,7 @@
 						,-1,1)),
 						jumpscale	= (Math.min(
 							Math.sum(...CONTROL.binding.jump)
-						,1))*0.12;
+						,1))*PLAYER.jump;
 					forward.multiplyScalar(fwdscale);
 					strafe.multiplyScalar(strscale);
 					forward.add(strafe);
@@ -275,7 +283,7 @@
 			scene.fog           = new THREE.FogExp2(0xffcccc,0.16);
 			scene.add(head());
 			head().position.x	= m?0:2;
-			head().position.y	= 1.52;
+			head().position.y	= PLAYER.height;
 			head().position.z	= 4;
 			head().velocity		= new THREE.Vector3();
 			head().canJump		= !0;
@@ -303,75 +311,84 @@
 			);
 
 			//  Add Ground
-			var gnd_geo = new THREE.PlaneGeometry(600,600),
-			    gnd_mat = new THREE.MeshStandardMaterial({
+			var gnd_geo			= new THREE.PlaneGeometry(600,600),
+			    gnd_mat			= new THREE.MeshStandardMaterial({
 			        color:0xffc8c8,
 			        roughness:1,
 			        metalness:0,
 			        emissive:0
 			    }),
-			    plane     = new THREE.Mesh(gnd_geo,gnd_mat);
-			plane.position.y = 0;
-			plane.rotation.x = -Math.PI/2;
-			plane.doubleSided = true;
-			plane.receiveShadow = true;
+			    plane     		= new THREE.Mesh(gnd_geo,gnd_mat);
+			plane.position.y	= 0;
+			plane.rotation.x	= -Math.PI/2;
+			plane.doubleSided	= true;
+			plane.receiveShadow	= true;
 			scene.add(plane);
 			var objects = [plane];
 
 			//  Add Cube
-			var geometry = new THREE.BoxGeometry(1, 1, 1),
-			    material = new THREE.MeshLambertMaterial({color:0xffc0c0}),
-			    cube = new THREE.Mesh(geometry, material);
-			cube.position.y = 0.5;
-			cube.castShadow = true;
-			if(m) cube.rotation.y = -Math.PI/6;
+			var geometry	= new THREE.BoxGeometry(1, 1, 1),
+			    material	= new THREE.MeshLambertMaterial({color:0xffc0c0}),
+			    cube		= new THREE.Mesh(geometry, material);
+			cube.position.y	= 0.5;
+			cube.castShadow	= true;
+			cube.rotation.y	= m?-Math.PI/6:0;
 			scene.add(cube);
 			objects.push(cube);
 
 
 			//  Add Pillar
-			geometry = new THREE.BoxGeometry(1, 2, 1);
-			material = new THREE.MeshLambertMaterial({color:0xffc0c0});
-			var pill = new THREE.Mesh(geometry, material);
-			pill.position.y = 1;
-			pill.position.x = 2;
-			pill.castShadow = true;
+			geometry		= new THREE.BoxGeometry(1, 2, 1);
+			material		= new THREE.MeshLambertMaterial({color:0xffc0c0});
+			var pill		= new THREE.Mesh(geometry, material);
+			pill.position.y	= 1;
+			pill.position.x	= 2;
+			pill.castShadow	= true;
 			scene.add(pill);
 			objects.push(pill);
 
 			//  Add Lighting
-			var light = new THREE.PointLight(0xffffff,0.15);
+			var light		= new THREE.PointLight(0xffffff,0.15),
+				light2		= new THREE.AmbientLight(0xffffff,0.95);
+			light.castShadow= true;
 			light.position.set(-2.2,5,1.8);
-			light.castShadow = true;
 			scene.add(light);
-			var light2 = new THREE.AmbientLight(0xffffff,0.95);
 			scene.add(light2);
 
 			//	Add Collision Detection
-			var raycaster = new THREE.Raycaster(new THREE.Vector3(),new THREE.Vector3(0,-1,0),0,0.53),
-				onGround = function(){
-				raycaster.ray.origin.copy(head().position);
-				raycaster.ray.origin.y -= 1;
-				return raycaster.intersectObjects(objects);
-			};
+			var raycaster	= new THREE.Raycaster(
+					new THREE.Vector3(),
+					new THREE.Vector3(0,-1,0),
+					0,PLAYER.step+0.01),
+				onGround	= function(){
+					raycaster.ray.origin.copy(head().position);
+					raycaster.ray.origin.y -= PLAYER.height-(PLAYER.step);
+					return raycaster.intersectObjects(objects);
+				};
 
 			//	Add Physics
 			var PHYSICS = {
 				update(){
+					//	Gravity
 					head().velocity.y -= 0.98 / 60;
 					var isgrounded = onGround().length;
+
+					//	Handle Jumping
 					if(isgrounded){
-						head().position.y = onGround()[0].point.y + 1.52;
+						head().position.y = onGround()[0].point.y+PLAYER.height;
 						head().velocity.y = Math.max(head().velocity.y,0);
 						head().canJump = !0;
 					} else {
 						head().canJump = !1;
 					}
 
+					//	Wall Collisions
+
+
 					head().translateX(head().velocity.x);
 					head().translateY(head().velocity.y);
 					head().translateZ(head().velocity.z);
-					if(head().position.y<1.52) head().position.y = 1.52;
+					head().position.y=Math.max(head().position.y,PLAYER.height);
 				}
 			};
 
