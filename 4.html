@@ -326,10 +326,10 @@
 				material	= new THREE.SpriteMaterial({map:spriteMap,fog:!0});
 			for(let i=0;i<2e3;i++){
 				let p = new THREE.Sprite(material);
-				p.velocity = new THREE.Vector3(0,-0.5,0);
-				p.position.x = (r()*100)-50,
-				p.position.y = (r()*100),
-				p.position.z = (r()*100)-50,
+				p.velocity = new THREE.Vector3(0,-0.1,0);
+				p.position.x = (r()*64)-32,
+				p.position.y = (r()*64),
+				p.position.z = (r()*64)-32,
 				scene.add(p);
 				particles.push(p);
 			}
@@ -341,7 +341,7 @@
 				//	Handle Snow
 				for(var i of particles){
 					i.position.add(i.velocity);
-					i.position.y += i.position.y<-2?100:0;
+					i.position.y += i.position.y<-2?64:0;
 				}
                 //	Scene Control
 				if(!paused){
