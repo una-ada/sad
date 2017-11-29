@@ -338,10 +338,10 @@
 
 
 			//  Add Pillar
-			geometry		= new THREE.BoxGeometry(1, 2, 1);
+			geometry		= new THREE.BoxGeometry(1, 3, 1);
 			material		= new THREE.MeshLambertMaterial({color:0xffc0c0});
 			var pill		= new THREE.Mesh(geometry, material);
-			pill.position.y	= 1;
+			pill.position.y	= 1.5;
 			pill.position.x	= 2;
 			pill.castShadow	= true;
 			scene.add(pill);
@@ -401,12 +401,15 @@
 						raycaster.set(head().position.clone(),i);
 						collisions.push(...raycaster.intersectObjects(objects));
 					}
-					if(collisions.length) console.log(collisions);
 					for(let i of collisions){
 						if(i.distance<PLAYER.radius){
-							let p=i.point.add(i.face.vertexNormals[0].clone().multiplyScalar(PLAYER.radius));
+							let p=i.point.add(
+								i.face.vertexNormals[0].clone()
+								.multiplyScalar(PLAYER.radius*1.1)
+							);
 							head().position.x = p.x;
 							head().position.z = p.z;
+							break;
 						}
 					}
 
