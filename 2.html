@@ -259,36 +259,36 @@
     <body>
         <div class="caption">click here.</div>
         <script>
-            //	Scene Setup
-            const
-                scene		= new THREE.Scene(),
-                aspect		= window.innerWidth/window.innerHeight,
-                camera		= new THREE.PerspectiveCamera(75,aspect,0.1,1e3),
+			//	Scene Setup
+			const
+			    scene		= new THREE.Scene(),
+			    aspect		= window.innerWidth/window.innerHeight,
+			    camera		= new THREE.PerspectiveCamera(75,aspect,0.1,1e3),
 				m			= window.mobilecheck(),
-                camcon      = m
-                    ? new THREE.DeviceOrientationControls(camera)
-                    : new CONTROL.Camera(camera),
+			    camcon      = m
+			        ? new THREE.DeviceOrientationControls(camera)
+			        : new CONTROL.Camera(camera),
 				head		= ()=>{return m?camera:camcon.getObject()},
 				renderer	= new THREE.WebGLRenderer(),
-                r			= ()=>Math.random();
-            scene.background	= new THREE.Color(0xffcccc);
-            scene.fog           = new THREE.FogExp2(0xffcccc,0.16);
-            scene.add(head());
-            head().position.x	= m?0:2;
-            head().position.y	= 1.52;
-            head().position.z	= 4;
+			    r			= ()=>Math.random();
+			scene.background	= new THREE.Color(0xffcccc);
+			scene.fog           = new THREE.FogExp2(0xffcccc,0.16);
+			scene.add(head());
+			head().position.x	= m?0:2;
+			head().position.y	= 1.52;
+			head().position.z	= 4;
 			head().velocity		= new THREE.Vector3();
 			head().canJump		= !0;
-            renderer.setSize(window.innerWidth,window.innerHeight);
-            renderer.shadowMap.enabled = true;
-            renderer.shadowMap.type = THREE.PCFSoftShadowMap;
-            document.body.appendChild(renderer.domElement);
+			renderer.setSize(window.innerWidth,window.innerHeight);
+			renderer.shadowMap.enabled = true;
+			renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+			document.body.appendChild(renderer.domElement);
 
 			var paused = !m;
 
-            //  Pointerlock Setup
+			//  Pointerlock Setup
 			var lockscreen = document.getElementsByClassName('caption')[0];
-            CONTROL.PointerLock(
+			CONTROL.PointerLock(
 				renderer.domElement,
 				()=>{
 					paused=!1;
@@ -302,39 +302,50 @@
 				}
 			);
 
-            //  Add Ground
-            var gnd_geo = new THREE.PlaneGeometry(600,600),
-                gnd_mat = new THREE.MeshStandardMaterial({
-                    color:0xffc8c8,
-                    roughness:1,
-                    metalness:0,
-                    emissive:0
-                }),
-                plane     = new THREE.Mesh(gnd_geo,gnd_mat);
-            plane.position.y = 0;
-            plane.rotation.x = -Math.PI/2;
-            plane.doubleSided = true;
-            plane.receiveShadow = true;
-            scene.add(plane);
+			//  Add Ground
+			var gnd_geo = new THREE.PlaneGeometry(600,600),
+			    gnd_mat = new THREE.MeshStandardMaterial({
+			        color:0xffc8c8,
+			        roughness:1,
+			        metalness:0,
+			        emissive:0
+			    }),
+			    plane     = new THREE.Mesh(gnd_geo,gnd_mat);
+			plane.position.y = 0;
+			plane.rotation.x = -Math.PI/2;
+			plane.doubleSided = true;
+			plane.receiveShadow = true;
+			scene.add(plane);
 			var objects = [plane];
 
-            //  Add Cube
-            var geometry = new THREE.BoxGeometry(1, 1, 1),
-                material = new THREE.MeshLambertMaterial({color:0xffc0c0}),
-                cube = new THREE.Mesh(geometry, material);
-            cube.position.y = 0.5;
-            cube.castShadow = true;
+			//  Add Cube
+			var geometry = new THREE.BoxGeometry(1, 1, 1),
+			    material = new THREE.MeshLambertMaterial({color:0xffc0c0}),
+			    cube = new THREE.Mesh(geometry, material);
+			cube.position.y = 0.5;
+			cube.castShadow = true;
 			if(m) cube.rotation.y = -Math.PI/6;
-            scene.add(cube);
+			scene.add(cube);
 			objects.push(cube);
 
-            //  Add Lighting
-            var light = new THREE.PointLight(0xffffff,0.15);
-            light.position.set(-2.2,5,1.8);
-            light.castShadow = true;
-            scene.add(light);
-            var light2 = new THREE.AmbientLight(0xffffff,0.95);
-            scene.add(light2);
+
+			//  Add Pillar
+			geometry = new THREE.BoxGeometry(1, 2, 1);
+			material = new THREE.MeshLambertMaterial({color:0xffc0c0});
+			var pill = new THREE.Mesh(geometry, material);
+			pill.position.y = 1;
+			pill.position.x = 2;
+			pill.castShadow = true;
+			scene.add(pill);
+			objects.push(pill);
+
+			//  Add Lighting
+			var light = new THREE.PointLight(0xffffff,0.15);
+			light.position.set(-2.2,5,1.8);
+			light.castShadow = true;
+			scene.add(light);
+			var light2 = new THREE.AmbientLight(0xffffff,0.95);
+			scene.add(light2);
 
 			//	Add Collision Detection
 			var raycaster = new THREE.Raycaster(new THREE.Vector3(),new THREE.Vector3(0,-1,0),0,0.53),
@@ -368,10 +379,10 @@
 			(render	= ()=>{
 				//	Loop
 				requestAnimationFrame(render);
-                //	Scene Control
+			    //	Scene Control
 				if(!paused){
-	                CONTROL.gamepadPoll();
-	                CONTROL.Move.update();
+					CONTROL.gamepadPoll();
+					CONTROL.Move.update();
 					PHYSICS.update();
 					camcon.update();
 				}
