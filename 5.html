@@ -235,17 +235,19 @@
 						speed       = this.speed,
 						fwdscale    = (Math.constrain(
 							Math.sum(...CONTROL.binding.forward)
-						,-1,1))*speed,
+						,-1,1)),
 						strscale    = (Math.constrain(
 							Math.sum(...CONTROL.binding.right)
-						,-1,1))*speed,
+						,-1,1)),
 						jumpscale	= (Math.min(
 							Math.sum(...CONTROL.binding.jump)
 						,1))*0.12;
 					forward.multiplyScalar(fwdscale);
 					strafe.multiplyScalar(strscale);
+					forward.add(strafe);
+					forward.normalize();
+					forward.multiplyScalar(speed);
 					position.add(forward);
-					position.add(strafe);
 					if(head().canJump) head().velocity.y += jumpscale;
 					console.log(head().canJump, Math.sum(...CONTROL.binding.jump),head().velocity.y)
 					head().position.x = position.x;
