@@ -38,6 +38,7 @@
 			var PLAYER		= {
 				height		: 1.52,
 				jump		: 0.12,
+				radius		: 0.1,
 				step		: 0.5,
 				walking		: 0.07
 			}
@@ -256,10 +257,9 @@
 					forward.normalize();
 					forward.multiplyScalar(speed);
 					position.add(forward);
-					if(head().canJump) head().velocity.y += jumpscale;
-					console.log(head().canJump, Math.sum(...CONTROL.binding.jump),head().velocity.y)
-					head().position.x = position.x;
-					head().position.z = position.z;
+					head().position.x  = position.x;
+					head().velocity.y += head().canJump?jumpscale:0;
+					head().position.z  = position.z;
 				}
 			}
 		</script>
@@ -361,7 +361,10 @@
 					new THREE.Vector3(0,-1,0),
 					0,PLAYER.step+0.01),
 				onGround	= function(){
-					raycaster.ray.origin.copy(head().position);
+					raycaster.set(
+						new THREE.Vector3().copy(head().position),
+						new THREE.Vector3(0,-1,0)
+					);
 					raycaster.ray.origin.y -= PLAYER.height-(PLAYER.step);
 					return raycaster.intersectObjects(objects);
 				};
@@ -383,7 +386,29 @@
 					}
 
 					//	Wall Collisions
-
+					var forward		= (new THREE.Vector3(0,0,-1)).applyQuaternion(head().quaternion),
+						right		= forward.clone().cross(camera.up),
+						backward	= right.clone().cross(camera.up),
+						left		= backward.clone().cross(camera.up),
+						colliders	= [forward,right,backward,left],
+						collisions	= [];
+					for(let i of colliders){
+						raycaster.set(head().position.clone(),i);
+						raycaster.ray.origin.y -= PLAYER.height-(PLAYER.step);
+						collisions.push(...raycaster.intersectObjects(objects));
+					}
+					for(let i of colliders){
+						raycaster.set(head().position.clone(),i);
+						collisions.push(...raycaster.intersectObjects(objects));
+					}
+					if(collisions.length) console.log(collisions);
+					for(let i of collisions){
+						if(i.distance<PLAYER.radius){
+							let p=i.point.add(i.face.vertexNormals[0].clone().multiplyScalar(PLAYER.radius));
+							head().position.x = p.x;
+							head().position.z = p.z;
+						}
+					}
 
 					head().translateX(head().velocity.x);
 					head().translateY(head().velocity.y);
