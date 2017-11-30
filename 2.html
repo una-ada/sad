@@ -301,12 +301,10 @@
 				()=>{
 					paused=!1;
 					camcon.enableMouse=!0;
-					lockscreen.style.display='none';
 				},
 				()=>{
 					paused=!0;
 					camcon.enableMouse=!1;
-					if(!m)lockscreen.style.display='';
 				}
 			);
 
@@ -426,10 +424,18 @@
 				requestAnimationFrame(render);
 			    //	Scene Control
 				if(!paused){
+					lockscreen.style.display='none';
 					CONTROL.gamepadPoll();
 					CONTROL.Move.update();
 					PHYSICS.update();
 					camcon.update();
+					if(head().position.y>4&&head().canJump){
+						head().position.x	= m?0:2;
+						head().position.y	= PLAYER.height;
+						head().position.z	= 4;
+					}
+				} else {
+					if(!m)lockscreen.style.display='';
 				}
 				renderer.render(scene,camera);
 			})();
