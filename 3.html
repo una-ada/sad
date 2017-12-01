@@ -279,8 +279,8 @@
 				head		= ()=>{return m?camera:camcon.getObject()},
 				renderer	= new THREE.WebGLRenderer(),
 			    r			= ()=>Math.random();
-			scene.background	= new THREE.Color(0xffcccc);
-			scene.fog           = new THREE.FogExp2(0xffcccc,0.16);
+			scene.background	= new THREE.Color(0xccccff);
+			scene.fog           = new THREE.FogExp2(0xccccff,0.16);
 			scene.add(head());
 			head().position.x	= m?0:2;
 			head().position.y	= PLAYER.height;
@@ -311,7 +311,7 @@
 			//  Add Ground
 			var gnd_geo			= new THREE.PlaneGeometry(600,600),
 			    gnd_mat			= new THREE.MeshStandardMaterial({
-			        color:0xffc8c8,
+			        color:0xc8c8ff,
 			        roughness:1,
 			        metalness:0,
 			        emissive:0
@@ -326,7 +326,7 @@
 
 			//  Add Cube
 			var geometry	= new THREE.BoxGeometry(1, 1, 1),
-			    material	= new THREE.MeshLambertMaterial({color:0xffc0c0}),
+			    material	= new THREE.MeshLambertMaterial({color:0xc0c0ff}),
 			    cube		= new THREE.Mesh(geometry, material);
 			cube.position.y	= 0.5;
 			cube.castShadow	= true;
@@ -337,7 +337,7 @@
 
 			//  Add Pillar
 			geometry		= new THREE.BoxGeometry(1, 3, 1);
-			material		= new THREE.MeshLambertMaterial({color:0xffc0c0});
+			material		= new THREE.MeshLambertMaterial({color:0xc0c0ff});
 			var pill		= new THREE.Mesh(geometry, material);
 			pill.position.y	= 1.5;
 			pill.position.x	= 2;
