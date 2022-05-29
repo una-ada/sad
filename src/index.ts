@@ -23,6 +23,9 @@ window.addEventListener('resize', _ => {
   renderer.handleResize();
   player.handleResize();
 });
+document.addEventListener('mousedown', _ =>
+  renderer.domElement.requestPointerLock()
+);
 document.addEventListener('keydown', e => {}, false);
 document.addEventListener('keyup', e => {}, false);
 controls.addEventListener('lock', e => {
