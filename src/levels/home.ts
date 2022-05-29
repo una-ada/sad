@@ -7,7 +7,6 @@ import {
   MeshLambertMaterial,
 } from 'three';
 
-/*----- Initialize -----------------------------------------------------------*/
 const levelHome = new Level();
 
 //  Add Ground

@@ -1,7 +1,6 @@
 import { PerspectiveCamera, Vector3 } from 'three';
 import { PlayerData } from './PlayerData';
 
-/*----- Class Definition -----------------------------------------------------*/
 export class Player extends PerspectiveCamera {
   public data: PlayerData;
   public canJump: boolean;

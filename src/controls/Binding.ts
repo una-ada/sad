@@ -1,6 +1,5 @@
 import { KeyBind } from "./KeyBind";
 
-/** List of game control bindings. */
 export interface Binding {
   forward: KeyBind[],
   right: KeyBind[],
