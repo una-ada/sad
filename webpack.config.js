@@ -11,6 +11,7 @@ const path = require('path');
 /*----- Exports --------------------------------------------------------------*/
 module.exports = {
   entry: './src/index.ts',
+  mode: 'development',
   watch: true,
   module: {
     rules: [

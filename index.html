@@ -356,50 +356,6 @@
         }
       );
 
-      //  Add Ground
-      var gnd_geo = new THREE.PlaneGeometry(600, 600),
-        gnd_mat = new THREE.MeshStandardMaterial({
-          color: 0xffc8c8,
-          roughness: 1,
-          metalness: 0,
-          emissive: 0,
-        }),
-        plane = new THREE.Mesh(gnd_geo, gnd_mat);
-      plane.position.y = 0;
-      plane.rotation.x = -Math.PI / 2;
-      plane.doubleSided = true;
-      plane.receiveShadow = true;
-      scene.add(plane);
-      var objects = [plane];
-
-      //  Add Cube
-      var geometry = new THREE.BoxGeometry(1, 1, 1),
-        material = new THREE.MeshLambertMaterial({ color: 0xffc0c0 }),
-        cube = new THREE.Mesh(geometry, material);
-      cube.position.y = 0.5;
-      cube.castShadow = true;
-      cube.rotation.y = m ? -Math.PI / 6 : 0;
-      scene.add(cube);
-      objects.push(cube);
-
-      //  Add Pillar
-      geometry = new THREE.BoxGeometry(1, 3, 1);
-      material = new THREE.MeshLambertMaterial({ color: 0xffc0c0 });
-      var pill = new THREE.Mesh(geometry, material);
-      pill.position.y = 1.5;
-      pill.position.x = 2;
-      pill.castShadow = true;
-      scene.add(pill);
-      objects.push(pill);
-
-      //  Add Lighting
-      var light = new THREE.PointLight(0xffffff, 0.15),
-        light2 = new THREE.AmbientLight(0xffffff, 0.95);
-      light.castShadow = true;
-      light.position.set(-2.2, 5, 1.8);
-      scene.add(light);
-      scene.add(light2);
-
       //	Add Collision Detection
       var raycaster = new THREE.Raycaster(
           new THREE.Vector3(),
