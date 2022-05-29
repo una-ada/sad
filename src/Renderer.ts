@@ -11,9 +11,9 @@ import { Player } from './Player';
 
 /*----- Class Definition -----------------------------------------------------*/
 export class Renderer extends WebGLRenderer {
-  public paused: boolean;
-  private level: Level;
-  private player: Player;
+  paused: boolean;
+  level: Level;
+  player: Player;
   constructor(level: Level, player: Player) {
     /*----- Super ------------------------------------------------------------*/
     super();
@@ -26,11 +26,11 @@ export class Renderer extends WebGLRenderer {
     this.level = level;
     this.player = player;
   }
-  public loop() {
+  loop(): void {
     this.render(this.level, this.player);
-    requestAnimationFrame(this.loop);
+    requestAnimationFrame(this.loop.bind(this));
   }
-  public handleResize() {
+  handleResize(): void {
     this.setSize(window.innerWidth, window.innerHeight);
   }
 }
