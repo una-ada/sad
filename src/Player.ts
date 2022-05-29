@@ -1,6 +1,10 @@
 import { PerspectiveCamera, Vector3 } from 'three';
 import { PlayerData } from './PlayerData';
 
+/**
+ * The Player class creates a player in the level as an extension of a camera 
+ * as this is a first person experience.
+ */
 export class Player extends PerspectiveCamera {
   public data: PlayerData;
   public canJump: boolean;
@@ -20,7 +24,8 @@ export class Player extends PerspectiveCamera {
     this.velocity = new Vector3();
     this.canJump = true;
   }
-  public handleResize() {
+  
+  handleResize = ():void => {
     this.aspect = window.innerWidth / window.innerHeight;
     this.updateProjectionMatrix();
   }

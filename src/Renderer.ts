@@ -1,5 +1,5 @@
 import { PCFShadowMap, WebGLRenderer } from 'three';
-import { Level } from './Level';
+import { Level } from './levels/Level';
 import { Player } from './Player';
 
 /**
@@ -21,11 +21,12 @@ export class Renderer extends WebGLRenderer {
     this.level = level;
     this.player = player;
   }
-  loop(): void {
+
+  /** Run the renderer on every animation frame. */
+  loop = (): void => {
     this.render(this.level, this.player);
-    requestAnimationFrame(this.loop.bind(this));
-  }
-  handleResize(): void {
+    requestAnimationFrame(this.loop);
+  };
+  handleResize = (): void =>
     this.setSize(window.innerWidth, window.innerHeight);
-  }
 }

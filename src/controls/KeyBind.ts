@@ -1,4 +1,4 @@
 export interface KeyBind {
-  keyCode: number,
+  key: string,
   inverted: boolean,
 }
