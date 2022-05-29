@@ -1,7 +1,7 @@
 /**
  * @file    Sad Renderer Class
  * @author  Una Ada <una@xn--z7x.dev>
- * @version 2.0.1 (2022.05.28)
+ * @version 2.0.1 (2022.05.29)
  */
 
 /*----- Imports --------------------------------------------------------------*/
@@ -24,10 +24,11 @@ export class Renderer extends WebGLRenderer {
     /*----- Game Relevant ----------------------------------------------------*/
     this.paused = true;
     this.level = level;
+    this.player = player;
   }
   public loop() {
+    this.render(this.level, this.player);
     requestAnimationFrame(this.loop);
-    super.render(this.level, this.player);
   }
   public handleResize() {
     this.setSize(window.innerWidth, window.innerHeight);

@@ -11,8 +11,8 @@ import { Player } from './Player';
 import { PointerLockControls } from 'three/examples/jsm/controls/PointerLockControls';
 
 /*----- Initialize -----------------------------------------------------------*/
-const player = new Player(),
-  renderer = new Renderer(levelHome, player),
+const player = new Player();
+const renderer = new Renderer(levelHome, player),
   caption = document.getElementById('caption'),
   controls = new PointerLockControls(player, renderer.domElement);
 levelHome.add(player);
@@ -26,9 +26,11 @@ window.addEventListener('resize', _ => {
 document.addEventListener('keydown', e => {}, false);
 document.addEventListener('keyup', e => {}, false);
 controls.addEventListener('lock', e => {
+  renderer.paused = false;
   caption.style.display = 'none';
 });
 controls.addEventListener('unlock', e => {
+  renderer.paused = true;
   caption.style.display = 'block';
 });
 
