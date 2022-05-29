@@ -18,5 +18,8 @@
   "bugs": {
     "url": "https://github.com/una-ada/sad/issues"
   },
-  "homepage": "https://github.com/una-ada/sad#readme"
+  "homepage": "https://github.com/una-ada/sad#readme",
+  "dependencies": {
+    "three": "^0.141.0"
+  }
 }
