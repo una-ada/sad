@@ -17,12 +17,15 @@ export class Controller {
       ),
       forward: Vector3 = new Vector3(0, 0, -1).applyQuaternion(
         this.player.quaternion
-      );
+      ),
+      right: Vector3 = forward.clone().cross(this.player.up);
     forward
       .multiplyScalar(movement.z)
-      .add(forward.clone().cross(this.player.up).multiplyScalar(movement.x)).normalize().multiplyScalar(this.player.data.walking);
+      .add(right.multiplyScalar(movement.x))
+      .normalize()
+      .multiplyScalar(this.player.data.walking);
     forward.y = 0;
-    this.player.position.add(forward)
+    this.player.position.add(forward);
   };
   loop = (): void => {
     this.update();
