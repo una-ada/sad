@@ -1,10 +1,3 @@
-/**
- * @file Sad Home Level
- * @author Una Ada <una@xn--z7x.dev>
- * @version 2.0.1 (2022.05.28)
- */
-
-/*----- Imports --------------------------------------------------------------*/
 import { Level } from '../Level';
 import {
   PlaneGeometry,

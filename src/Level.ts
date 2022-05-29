@@ -1,13 +1,5 @@
-/**
- * @file    Sad Level Class
- * @author  Una Ada <una@xn--z7x.dev>
- * @version 2.0.1 (2022.05.28)
- */
-
-/*----- Imports --------------------------------------------------------------*/
 import { AmbientLight, Color, FogExp2, PointLight, Scene } from 'three';
 
-/*----- Class Definition -----------------------------------------------------*/
 export class Level extends Scene {
   constructor() {
     super();

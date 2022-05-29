@@ -1,10 +1,3 @@
-/**
- * @file    Sad Game Wrapper
- * @author  Una Ada <una@xn--z7x.dev>
- * @version 2.0.1 (2022.05.28)
- */
-
-/*----- Imports --------------------------------------------------------------*/
 import levelHome from './levels/home';
 import { Renderer } from './Renderer';
 import { Player } from './Player';

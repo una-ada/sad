@@ -1,27 +1,22 @@
-/**
- * @file    Sad Renderer Class
- * @author  Una Ada <una@xn--z7x.dev>
- * @version 2.0.1 (2022.05.29)
- */
-
-/*----- Imports --------------------------------------------------------------*/
 import { PCFShadowMap, WebGLRenderer } from 'three';
 import { Level } from './Level';
 import { Player } from './Player';
 
-/*----- Class Definition -----------------------------------------------------*/
+/**
+ * This renderer acts as a wrapper for the THREE.js WebGLRenderer by extending
+ * it into a new class. By extending the base class, the scene (level) and
+ * camera (player) can be passed into the constructor.
+ */
 export class Renderer extends WebGLRenderer {
   paused: boolean;
   level: Level;
   player: Player;
   constructor(level: Level, player: Player) {
-    /*----- Super ------------------------------------------------------------*/
     super();
     this.setSize(window.innerWidth, window.innerHeight);
     this.shadowMap.enabled = true;
     this.shadowMap.type = PCFShadowMap;
 
-    /*----- Game Relevant ----------------------------------------------------*/
     this.paused = true;
     this.level = level;
     this.player = player;

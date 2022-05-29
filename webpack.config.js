@@ -5,10 +5,8 @@
  * {@link https://webpack.js.org/configuration/watch/}
  * {@link https://webpack.js.org/guides/typescript/}
  */
-/*----- Imports --------------------------------------------------------------*/
 const path = require('path');
 
-/*----- Exports --------------------------------------------------------------*/
 module.exports = {
   entry: './src/index.ts',
   mode: 'development',
