@@ -6,12 +6,31 @@
 
 /*----- Imports --------------------------------------------------------------*/
 import levelHome from './levels/home';
+import { Renderer } from './Renderer';
+import { Player } from './Player';
+import { PointerLockControls } from 'three/examples/jsm/controls/PointerLockControls';
 
 /*----- Initialize -----------------------------------------------------------*/
+const player = new Player(),
+  renderer = new Renderer(levelHome, player),
+  caption = document.getElementById('caption'),
+  controls = new PointerLockControls(player, renderer.domElement);
+levelHome.add(player);
+document.body.appendChild(renderer.domElement);
+
 /*----- Event Listeners ------------------------------------------------------*/
+window.addEventListener('resize', _ => {
+  renderer.handleResize();
+  player.handleResize();
+});
 document.addEventListener('keydown', e => {}, false);
 document.addEventListener('keyup', e => {}, false);
-// window.addEventListener('gamepadconnected', e => {}, false);
-// window.addEventListener('gamepaddisconnected', e => {}, false);
+controls.addEventListener('lock', e => {
+  caption.style.display = 'none';
+});
+controls.addEventListener('unlock', e => {
+  caption.style.display = 'block';
+});
 
 /*----- Start Game -----------------------------------------------------------*/
+renderer.loop();

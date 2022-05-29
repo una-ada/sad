@@ -208,39 +208,10 @@
     <!-- Camera Controls -->
     <script>
       CONTROL.Camera = function (camera) {
-        //	Camera Setup
-        var scope = this,
-          pitchObject = new THREE.Object3D(),
-          yawObject = new THREE.Object3D(),
-          PI_2 = Math.PI / 2;
-        camera.rotation.set(0, 0, 0);
-        pitchObject.add(camera);
-        yawObject.position.y = 10;
-        yawObject.add(pitchObject);
-
         //	Settings
         this.enableMouse = false; //	Toggle Mouse Controls
         this.mouseSensitivity = 0.002; //	Mouse movement sensitivity
         this.controlSensitivity = 0.05; //	Gamepad movement sensitivy
-
-        //	Mouse Movement
-        var onMouseMove = function (e) {
-          if (!scope.enableMouse) return;
-          var dX = e.movementX || e.mozMovementX || e.webkitMovementX || 0,
-            dY = e.movementY || e.mozMovementY || e.webkitMovementY || 0;
-          yawObject.rotation.y -= dX * scope.mouseSensitivity;
-          pitchObject.rotation.x -= dY * scope.mouseSensitivity;
-          pitchObject.rotation.x = Math.constrain(
-            pitchObject.rotation.x,
-            -PI_2,
-            PI_2
-          );
-        };
-        document.addEventListener('mousemove', onMouseMove, !1);
-        this.dispose = function () {
-          document.removeEventListener('mousemove', onMouseMove, !1);
-        };
-
         //	Control Movement
         this.update = function () {
           var dX = Math.constrain(
@@ -257,20 +228,6 @@
             PI_2
           );
         };
-
-        //	Returns
-        this.getObject = function () {
-          return yawObject;
-        };
-        this.getDirection = (() => {
-          var direction = new THREE.Vector3(0, 0, -1);
-          rotation = new THREE.Euler(0, 0, 0, 'YXZ');
-          return function (v) {
-            rotation.set(pitchObject.rotation.x, yawObject.rotation.y, 0);
-            v.copy(direction).applyEuler(rotation);
-            return v;
-          };
-        })();
       };
     </script>
     <!-- Movement Controls -->
@@ -312,36 +269,7 @@
   <body>
     <div class="caption">click here.</div>
     <script>
-      //	Scene Setup
-      const scene = new THREE.Scene(),
-        aspect = window.innerWidth / window.innerHeight,
-        camera = new THREE.PerspectiveCamera(75, aspect, 0.1, 1e3),
-        m = window.mobilecheck(),
-        camcon = m
-          ? new THREE.DeviceOrientationControls(camera)
-          : new CONTROL.Camera(camera),
-        head = () => {
-          return m ? camera : camcon.getObject();
-        },
-        renderer = new THREE.WebGLRenderer(),
-        r = () => Math.random();
-      scene.background = new THREE.Color(0xffcccc);
-      scene.fog = new THREE.FogExp2(0xffcccc, 0.16);
-      scene.add(head());
-      head().position.x = m ? 0 : 2;
-      head().position.y = PLAYER.height;
-      head().position.z = 4;
-      head().velocity = new THREE.Vector3();
-      head().canJump = !0;
-      renderer.setSize(window.innerWidth, window.innerHeight);
-      renderer.shadowMap.enabled = true;
-      renderer.shadowMap.type = THREE.PCFSoftShadowMap;
-      document.body.appendChild(renderer.domElement);
-
-      var paused = !m;
-
       //  Pointerlock Setup
-      var lockscreen = document.getElementsByClassName('caption')[0];
       CONTROL.PointerLock(
         renderer.domElement,
         () => {
