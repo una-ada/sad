@@ -34,7 +34,11 @@ export class KeyboardMovementHandler {
           (total += this.keyStates[keyBind.key] * (keyBind.inverted ? -1 : 1)),
         0
       ),
-      0,
+      this.binding.jump.reduce(
+        (total, keyBind) =>
+          (total += this.keyStates[keyBind.key] * (keyBind.inverted ? -1 : 1)),
+        0
+      ),
       this.binding.forward.reduce(
         (total, keyBind) =>
           (total += this.keyStates[keyBind.key] * (keyBind.inverted ? -1 : 1)),

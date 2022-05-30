@@ -22,6 +22,7 @@ export class Physics {
     return caster.intersectObjects(this.level.children);
   }
   update = (): void => {
+    console.log(this.player.velocity, this.player.canJump)
     this.player.velocity.y -= 0.98 / this.rate;
     var grounds = this.getPlayerGrounds();
     if (grounds.length > 0) {

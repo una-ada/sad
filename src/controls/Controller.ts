@@ -25,7 +25,7 @@ export class Controller {
       .normalize()
       .multiplyScalar(this.player.data.walking);
     forward.y = 0;
-    if (this.player.canJump && movement.y >= 1)
+    if (this.player.canJump && movement.y > 0)
       this.player.velocity.y += this.player.data.jump;
     this.player.position.add(forward);
   };
