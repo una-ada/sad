@@ -1,7 +1,5 @@
 import { Level } from './Level';
 import {
-  PlaneGeometry,
-  MeshStandardMaterial,
   Mesh,
   BoxGeometry,
   MeshLambertMaterial,

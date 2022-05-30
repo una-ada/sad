@@ -4,6 +4,7 @@ import { Player } from './Player';
 import { PointerLockControls } from 'three/examples/jsm/controls/PointerLockControls';
 import { KeyboardMovementHandler } from './controls/KeyboardMovementHandler';
 import { Controller } from './controls/Controller';
+import { Physics } from './Physics';
 
 /*----- Initialize -----------------------------------------------------------*/
 const player = new Player(),
@@ -25,7 +26,8 @@ const player = new Player(),
     ],
     jump: [{ key: ' ', inverted: false }],
   }),
-  controller = new Controller(player, [movementControls])
+  controller = new Controller(player, [movementControls]),
+  physics = new Physics(player, levelHome, 60);
 levelHome.add(player);
 document.body.appendChild(renderer.domElement);
 
@@ -51,4 +53,5 @@ cameraControls.addEventListener('unlock', e => {
 /*----- Start Game -----------------------------------------------------------*/
 renderer.loop();
 controller.loop();
+physics.loop();
 
