@@ -20,6 +20,7 @@
   },
   "homepage": "https://github.com/una-ada/sad#readme",
   "dependencies": {
+    "cannon-es": "^0.19.0",
     "three": "^0.141.0"
   },
   "devDependencies": {
