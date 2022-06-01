@@ -39,8 +39,16 @@
  */
 import { Level } from './levels/Level';
 import { Player } from './Player';
-import { Clock } from 'three';
-import { GSSolver, NaiveBroadphase, World } from 'cannon-es';
+import { BufferGeometry, Clock, Vector3 } from 'three';
+import { mergeVertices } from 'three/examples/jsm/utils/BufferGeometryUtils';
+import {
+  ConvexPolyhedron,
+  GSSolver,
+  NaiveBroadphase,
+  Trimesh,
+  Vec3,
+  World,
+} from 'cannon-es';
 
 export class Physics {
   player: Player;
@@ -62,4 +70,42 @@ export class Physics {
     requestAnimationFrame(this.loop);
     this.world.step(Math.min(this.clock.getDelta(), 0.1));
   };
+
+  /*----- THREE to Cannon Conversions ----------------------------------------*/
+  /**
+   * Create a Cannon Trimesh given a THREE.js BufferGeometry, based on
+   * CreateTrimesh from CannonUtils by {@link https://sbcode.net/ Sean Bradley}.
+   */
+  public static createTrimesh(geometry: BufferGeometry): Trimesh {
+    var vertices: number[] = (
+      geometry.index === null
+        ? geometry.attributes.position.array
+        : geometry.clone().toNonIndexed().attributes.position.array
+    ) as number[];
+    return new Trimesh(vertices, Object.keys(vertices).map(Number));
+  }
+  /**
+   * Create a Cannon ConvexPolyhedron given a THREE.js BufferGeometry, based on
+   * a {@link https://github.com/pmndrs/cannon-es/issues/103 proposed solution}
+   * by {@link https://github.com/marcofugaro Marco Fugaro}.
+   *
+   * @todo Consider a further simplification of this function by adding a
+   * {@link https://github.com/RedstoneWizard08/QuickHull QuickHull library}.
+   */
+  public static createConvexPolyhedron(
+    geometry: BufferGeometry
+  ): ConvexPolyhedron {
+    var tempGeometry = new BufferGeometry();
+    tempGeometry.setAttribute('position', geometry.getAttribute('position'));
+    tempGeometry = mergeVertices(tempGeometry);
+    var position: number[] = tempGeometry.attributes.position.array as number[],
+      index: number[] = tempGeometry.index.array as number[],
+      vertices: Vec3[] = [],
+      faces: number[][] = [];
+    for (let i = 0; i < position.length; i += 3)
+      vertices.push(new Vec3(position[i], position[i + 1], position[i + 2]));
+    for (let i = 0; i < index.length; i += 3)
+      faces.push([index[i], index[i + 1], index[i + 2]]);
+    return new ConvexPolyhedron({ vertices, faces });
+  }
 }
