@@ -39,42 +39,57 @@
  */
 import { Level } from './levels/Level';
 import { Player } from './Player';
-import { BufferGeometry, Clock, Vector3 } from 'three';
+import {
+  BoxGeometry,
+  BufferGeometry,
+  Clock,
+  CylinderGeometry,
+  PlaneGeometry,
+  SphereGeometry,
+  Vector3,
+} from 'three';
 import { mergeVertices } from 'three/examples/jsm/utils/BufferGeometryUtils';
 import {
+  Box,
   ConvexPolyhedron,
+  Cylinder,
   GSSolver,
   NaiveBroadphase,
+  Plane,
+  Sphere,
   Trimesh,
   Vec3,
   World,
 } from 'cannon-es';
 
-export class Physics {
+export class Physics extends World {
   player: Player;
   level: Level;
   clock: Clock;
   world: World;
   constructor(player: Player, level: Level, iterations: number) {
+    super({
+      gravity: new Vec3(0, -9.81, 0),
+      allowSleep: true,
+      broadphase: new NaiveBroadphase(),
+    });
     this.player = player;
     this.level = level;
     /*----- Cannon Setup -----------------------------------------------------*/
-    this.world = new World();
-    this.world.gravity.set(0, -9.81, 0);
-    this.world.broadphase = new NaiveBroadphase();
-    (this.world.solver as GSSolver).iterations = iterations;
-    this.world.allowSleep = true;
+    (this.solver as GSSolver).iterations = iterations;
   }
-  update = (): void => {};
+  update = (): void => {
+    this.step(Math.min(this.clock.getDelta(), 0.1));
+  };
   loop = (): void => {
     requestAnimationFrame(this.loop);
-    this.world.step(Math.min(this.clock.getDelta(), 0.1));
+    this.update();
   };
 
   /*----- Vector Conversions -------------------------------------------------*/
   public static createVec3 = (source: Vector3): Vec3 =>
     new Vec3(source.x, source.y, source.z);
-  public static createVector3 = (source: Vec3): Vector3 => 
+  public static createVector3 = (source: Vec3): Vector3 =>
     new Vector3(source.x, source.y, source.z);
 
   /*----- THREE to Cannon Geometry Conversions -------------------------------*/
@@ -113,5 +128,46 @@ export class Physics {
     for (let i = 0; i < index.length; i += 3)
       faces.push([index[i], index[i + 1], index[i + 2]]);
     return new ConvexPolyhedron({ vertices, faces });
+  }
+  /**
+   * Create a Cannon primitive shape (box, cylinder, etc.) given a THREE.js
+   * primitive geometry of the same variety.
+   *
+   * Documentation on the Cannon Shape base class can be found
+   * {@link https://pmndrs.github.io/cannon-es/docs/classes/Shape.html here}.
+   * Primitives are implemented entirely as their own subclasses in Cannon,
+   * likely for the sake of efficiency as different shapes allow for different
+   * collision algorithms and such; however, THREE.js primitives are all merely
+   * simplified constructors of the BufferGeometry base class as rendering and
+   * physics have different requirements. Documentation for each of the mesh
+   * classes used in this method are at the following links:
+   *
+   *  - {@link https://threejs.org/docs/#api/en/geometries/BoxGeometry}
+   *  - {@link https://threejs.org/docs/#api/en/geometries/CylinderGeometry}
+   *  - {@link https://threejs.org/docs/#api/en/geometries/PlaneGeometry}
+   *  - {@link https://threejs.org/docs/#api/en/geometries/SphereGeometry}
+   */
+  public static createPrimitive(
+    geometry: BoxGeometry | CylinderGeometry | PlaneGeometry | SphereGeometry
+  ): Box | Cylinder | Plane | Sphere {
+    switch (geometry.constructor) {
+      case CylinderGeometry:
+        var { radiusTop, radiusBottom, height } = (geometry as CylinderGeometry)
+          .parameters;
+        return new Cylinder(radiusTop, radiusBottom, height);
+      case BoxGeometry:
+        var { width, height, depth } = (geometry as BoxGeometry).parameters;
+        return new Box(new Vec3(width / 2, height / 2, depth / 2));
+      case PlaneGeometry:
+        var { width, height } = (geometry as PlaneGeometry).parameters;
+        /** @todo Find a better solution for setting box depth. */
+        return new Box(new Vec3(width / 2, height / 2, 0.01));
+      case SphereGeometry:
+        var radius = (geometry as SphereGeometry).parameters.radius;
+        return new Sphere(radius);
+      /** @todo Find a better solution for the default return. (Throw error?) */
+      default:
+        return new Box(new Vec3());
+    }
   }
 }
