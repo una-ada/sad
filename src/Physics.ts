@@ -64,19 +64,16 @@ import {
 
 export class Physics extends World {
   player: Player;
-  level: Level;
   clock: Clock;
   world: World;
-  constructor(player: Player, level: Level, iterations: number) {
+  constructor(player: Player, iterations: number) {
     super({
       gravity: new Vec3(0, -9.81, 0),
       allowSleep: true,
       broadphase: new NaiveBroadphase(),
     });
-    this.player = player;
-    this.level = level;
-    /*----- Cannon Setup -----------------------------------------------------*/
     (this.solver as GSSolver).iterations = iterations;
+    this.player = player;
   }
   update = (): void => {
     this.step(Math.min(this.clock.getDelta(), 0.1));

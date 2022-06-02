@@ -8,12 +8,18 @@ import {
   PointLight,
   Scene,
 } from 'three';
+import { Physics } from '../Physics';
+import { Player } from '../Player';
 
 export class Level extends Scene {
-  constructor() {
+  physics: Physics;
+  player: Player;
+  constructor(player: Player) {
     super();
     this.background = new Color(0xffcccc);
     this.fog = new FogExp2(0xffcccc, 0.16);
+    this.player = player;
+    this.physics = new Physics(player, 10);
 
     /*----- Lighting ---------------------------------------------------------*/
     var sun = new PointLight(0xffffff, 0.15),

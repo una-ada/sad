@@ -1,14 +1,14 @@
-import levelHome from './levels/home';
+import { HomeLevel } from './levels/HomeLevel';
 import { Renderer } from './Renderer';
 import { Player } from './Player';
 import { PointerLockControls } from 'three/examples/jsm/controls/PointerLockControls';
 import { KeyboardMovementHandler } from './controls/KeyboardMovementHandler';
 import { Controller } from './controls/Controller';
-import { Physics } from './Physics';
 
 /*----- Initialize -----------------------------------------------------------*/
 const player = new Player(),
-  renderer = new Renderer(levelHome, player),
+  home = new HomeLevel(player),
+  renderer = new Renderer(home, player),
   caption = document.getElementById('caption'),
   cameraControls = new PointerLockControls(player, renderer.domElement),
   movementControls = new KeyboardMovementHandler({
@@ -26,9 +26,7 @@ const player = new Player(),
     ],
     jump: [{ key: ' ', inverted: false }],
   }),
-  controller = new Controller(player, [movementControls]),
-  physics = new Physics(player, levelHome, 60);
-levelHome.add(player);
+  controller = new Controller(player, [movementControls]);
 document.body.appendChild(renderer.domElement);
 
 /*----- Event Listeners ------------------------------------------------------*/
@@ -53,5 +51,4 @@ cameraControls.addEventListener('unlock', e => {
 /*----- Start Game -----------------------------------------------------------*/
 renderer.loop();
 controller.loop();
-physics.loop();
-
+home.physics.loop();
