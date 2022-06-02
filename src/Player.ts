@@ -39,17 +39,26 @@ export class Player extends PerspectiveCamera {
     /*----- Jump Handling ----------------------------------------------------*/
     this.floor = false;
     /** @todo This has type `any` which sucks and I hate it. */
-    this.body.addEventListener(Body.COLLIDE_EVENT_NAME, (event: any) => {
-      var { bi, ni } = event.contact,
-        normal = new Vec3(),
-        up = new Vec3(0, 1, 0);
-      if (bi.id === this.body.id) ni.negate(normal);
-      else normal.copy(ni);
-      /** 
-       * @todo The `0.5` here is a threshold for what constitutes being on top 
-       * of something. Probably want to make this a Physics constant. */
-      if (normal.dot(up) > 0.5) this.floor = true;
-    });
+    this.body.addEventListener(
+      Body.COLLIDE_EVENT_NAME,
+      (event: {
+        contact: {
+          bi: Body;
+          bj: Body;
+          ni: Vec3;
+        };
+      }) => {
+        var { bi, ni } = event.contact,
+          normal = new Vec3(),
+          up = new Vec3(0, 1, 0);
+        if (bi.id === this.body.id) ni.negate(normal);
+        else normal.copy(ni);
+        /**
+         * @todo The `0.5` here is a threshold for what constitutes being on top
+         * of something. Probably want to make this a Physics constant. */
+        if (normal.dot(up) > 0.5) this.floor = true;
+      }
+    );
   }
 
   handleResize = (): void => {
