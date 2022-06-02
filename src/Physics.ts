@@ -44,18 +44,23 @@ import {
   BufferGeometry,
   Clock,
   CylinderGeometry,
+  Event,
+  Object3D,
   PlaneGeometry,
+  Quaternion as THREEQuat,
   SphereGeometry,
   Vector3,
 } from 'three';
 import { mergeVertices } from 'three/examples/jsm/utils/BufferGeometryUtils';
 import {
+  Body,
   Box,
   ConvexPolyhedron,
   Cylinder,
   GSSolver,
   NaiveBroadphase,
   Plane,
+  Quaternion as CannonQuat,
   Sphere,
   Trimesh,
   Vec3,
@@ -66,6 +71,10 @@ export class Physics extends World {
   player: Player;
   clock: Clock;
   world: World;
+  attachments: {
+    mesh: Object3D<Event>;
+    body: Body;
+  }[];
   constructor(player: Player, iterations: number) {
     super({
       gravity: new Vec3(0, -9.81, 0),
@@ -74,8 +83,13 @@ export class Physics extends World {
     });
     (this.solver as GSSolver).iterations = iterations;
     this.player = player;
+    this.attachments = [];
   }
   update = (): void => {
+    for(let {mesh, body} of this.attachments) {
+      mesh.position.copy(Physics.createVector3(body.position));
+      mesh.quaternion.copy(Physics.createTHREEQuat(body.quaternion))
+    }
     this.step(Math.min(this.clock.getDelta(), 0.1));
   };
   loop = (): void => {
@@ -83,11 +97,21 @@ export class Physics extends World {
     this.update();
   };
 
+  attachBody = (mesh: Object3D<Event>, body: Body): void => {
+    body.position.copy(Physics.createVec3(mesh.position));
+    body.quaternion.copy(Physics.createCannonQuat(mesh.quaternion));
+    this.attachments.push({ mesh, body });
+  };
+
   /*----- Vector Conversions -------------------------------------------------*/
   public static createVec3 = (source: Vector3): Vec3 =>
     new Vec3(source.x, source.y, source.z);
   public static createVector3 = (source: Vec3): Vector3 =>
     new Vector3(source.x, source.y, source.z);
+  public static createCannonQuat = (source: THREEQuat): CannonQuat =>
+    new CannonQuat(source.x, source.y, source.z, source.w);
+  public static createTHREEQuat = (source: CannonQuat): THREEQuat =>
+    new THREEQuat(source.x, source.y, source.z, source.w);
 
   /*----- THREE to Cannon Geometry Conversions -------------------------------*/
   /**

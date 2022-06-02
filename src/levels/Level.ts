@@ -1,3 +1,4 @@
+import { Body } from 'cannon-es';
 import {
   AmbientLight,
   Color,
@@ -30,19 +31,24 @@ export class Level extends Scene {
     this.add(scatter);
 
     /*----- Ground -----------------------------------------------------------*/
-    var ground = new Mesh(
-      new PlaneGeometry(600, 600),
-      new MeshStandardMaterial({
-        color: 0xffc8c8,
-        roughness: 1,
-        metalness: 0,
-        emissive: 0,
-      })
-    );
-    ground.position.y = 0;
-    ground.rotation.x = -Math.PI / 2;
-    ground.receiveShadow = true;
-    this.add(ground);
+    var groundGeometry = new PlaneGeometry(600, 600),
+      groundShape = Physics.createPrimitive(groundGeometry),
+      groundMesh = new Mesh(
+        groundGeometry,
+        new MeshStandardMaterial({
+          color: 0xffc8c8,
+          roughness: 1,
+          metalness: 0,
+          emissive: 0,
+        })
+      ),
+      groundBody = new Body({mass: 0});
+    groundMesh.position.y = 0;
+    groundMesh.rotation.x = -Math.PI / 2;
+    groundMesh.receiveShadow = true;
+    groundBody.addShape(groundShape);
+    this.add(groundMesh);
+    this.physics.addBody(groundBody);
+    this.physics.attachBody(groundMesh, groundBody);
   }
-
 }
