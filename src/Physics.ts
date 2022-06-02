@@ -163,7 +163,7 @@ export class Physics extends World {
         /** @todo Find a better solution for setting box depth. */
         return new Box(new Vec3(width / 2, height / 2, 0.01));
       case SphereGeometry:
-        var radius = (geometry as SphereGeometry).parameters.radius;
+        var { radius } = (geometry as SphereGeometry).parameters;
         return new Sphere(radius);
       /** @todo Find a better solution for the default return. (Throw error?) */
       default:
