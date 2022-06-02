@@ -71,7 +71,13 @@ export class Physics {
     this.world.step(Math.min(this.clock.getDelta(), 0.1));
   };
 
-  /*----- THREE to Cannon Conversions ----------------------------------------*/
+  /*----- Vector Conversions -------------------------------------------------*/
+  public static createVec3 = (source: Vector3): Vec3 =>
+    new Vec3(source.x, source.y, source.z);
+  public static createVector3 = (source: Vec3): Vector3 => 
+    new Vector3(source.x, source.y, source.z);
+
+  /*----- THREE to Cannon Geometry Conversions -------------------------------*/
   /**
    * Create a Cannon Trimesh given a THREE.js BufferGeometry, based on
    * CreateTrimesh from CannonUtils by {@link https://sbcode.net/ Sean Bradley}.
