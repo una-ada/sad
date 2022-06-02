@@ -26,10 +26,14 @@ export class Controller {
       .normalize()
       .multiplyScalar(this.player.data.walking);
     forward.y = 0;
-    if (this.player.floor && movement.y > 0)
-      this.player.body.velocity.y += this.player.data.jump;
-    this.player.body.velocity.x += forward.x;
-    this.player.body.velocity.z += forward.z;
+    if (this.player.floor) {
+      if (movement.y > 0) {
+        this.player.body.velocity.y += this.player.data.jump;
+        this.player.floor = false;
+      }
+      this.player.body.velocity.x += forward.x;
+      this.player.body.velocity.z += forward.z;
+    }
   };
   loop = (): void => {
     this.update();

@@ -1,4 +1,4 @@
-import { Body, Cylinder } from 'cannon-es';
+import { Body, Cylinder, Vec3 } from 'cannon-es';
 import { PerspectiveCamera, Vector3 } from 'three';
 import { Physics } from './Physics';
 import { PlayerData } from './PlayerData';
@@ -17,17 +17,15 @@ export class Player extends PerspectiveCamera {
     super(75, aspect, 0.1, 1e3);
     this.data = {
       height: 1.52,
-      jump: 1,
+      jump: 7.3,
       radius: 0.1,
       step: 0.5,
-      walking: 0.5,
+      walking: 0.3,
     };
     this.position.set(2, this.data.height, 4);
     this.rotation.set(0, 0, 0);
 
-    this.velocity = new Vector3();
-    this.floor = true;
-
+    /*----- Initialize Cannon Body -------------------------------------------*/
     this.body = new Body({
       allowSleep: false,
       fixedRotation: true,
@@ -36,6 +34,21 @@ export class Player extends PerspectiveCamera {
       material: Physics.material,
       shape: new Cylinder(0.5, 0.5, 2),
       type: Body.DYNAMIC,
+    });
+
+    /*----- Jump Handling ----------------------------------------------------*/
+    this.floor = false;
+    /** @todo This has type `any` which sucks and I hate it. */
+    this.body.addEventListener(Body.COLLIDE_EVENT_NAME, (event: any) => {
+      var { bi, ni } = event.contact,
+        normal = new Vec3(),
+        up = new Vec3(0, 1, 0);
+      if (bi.id === this.body.id) ni.negate(normal);
+      else normal.copy(ni);
+      /** 
+       * @todo The `0.5` here is a threshold for what constitutes being on top 
+       * of something. Probably want to make this a Physics constant. */
+      if (normal.dot(up) > 0.5) this.floor = true;
     });
   }
 
