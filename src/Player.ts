@@ -30,6 +30,7 @@ export class Player extends PerspectiveCamera {
 
     this.body = new Body({
       allowSleep: false,
+      fixedRotation: true,
       linearDamping: 0.9,
       mass: 5,
       material: Physics.material,

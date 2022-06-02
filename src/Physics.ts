@@ -91,7 +91,7 @@ export class Physics extends World {
     this.clock = new Clock();
     this.addContactMaterial(
       new ContactMaterial(Physics.material, Physics.material, {
-        friction: 0.1,
+        friction: 0,
         restitution: 0.7,
       })
     );
@@ -104,7 +104,6 @@ export class Physics extends World {
         mesh.quaternion.copy(Physics.createTHREEQuat(body.quaternion));
     }
     this.step(Math.min(this.clock.getDelta(), 0.1));
-    console.log(this.player.body.velocity);
   };
   loop = (): void => {
     requestAnimationFrame(this.loop);
