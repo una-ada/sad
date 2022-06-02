@@ -1,5 +1,5 @@
+import { Body, Cylinder } from 'cannon-es';
 import { PerspectiveCamera, Vector3 } from 'three';
-import { Capsule } from 'three/examples/jsm/math/Capsule';
 import { PlayerData } from './PlayerData';
 
 /**
@@ -7,31 +7,31 @@ import { PlayerData } from './PlayerData';
  * as this is a first person experience.
  */
 export class Player extends PerspectiveCamera {
-  public data: PlayerData;
-  public floor: boolean;
-  public velocity: Vector3;
-  public hitBox: Capsule;
+  data: PlayerData;
+  floor: boolean;
+  velocity: Vector3;
+  body: Body;
   constructor() {
     let aspect = window.innerWidth / window.innerHeight;
     super(75, aspect, 0.1, 1e3);
     this.data = {
       height: 1.52,
-      jump: 0.12,
+      jump: 1,
       radius: 0.1,
       step: 0.5,
-      walking: 0.07,
+      walking: 1,
     };
     this.position.set(2, this.data.height, 4);
     this.rotation.set(0, 0, 0);
 
-    this.hitBox = new Capsule(
-      new Vector3(0, 0.35, 0),
-      new Vector3(0, 1, 0),
-      0.35
-    );
-
     this.velocity = new Vector3();
     this.floor = true;
+
+    this.body = new Body({
+      mass: 5,
+      shape: new Cylinder(0.5, 0.5, 2),
+      linearDamping: 0.9,
+    });
   }
 
   handleResize = (): void => {

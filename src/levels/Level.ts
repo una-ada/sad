@@ -52,10 +52,7 @@ export class Level extends Scene {
     this.physics.attachBody(groundMesh, groundBody);
 
     /*----- Player -----------------------------------------------------------*/
-    var playerShape = new Cylinder(0.5, 0.5, 2),
-      playerBody = new Body({ mass: 5 });
-    playerBody.addShape(playerShape);
-    this.physics.addBody(playerBody);
-    this.physics.attachBody(player, playerBody);
+    this.physics.addBody(this.player.body);
+    this.physics.attachBody(this.player, this.player.body);
   }
 }

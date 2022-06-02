@@ -84,6 +84,7 @@ export class Physics extends World {
     (this.solver as GSSolver).iterations = iterations;
     this.player = player;
     this.attachments = [];
+    this.clock = new Clock();
   }
   update = (): void => {
     for(let {mesh, body} of this.attachments) {
@@ -91,6 +92,7 @@ export class Physics extends World {
       mesh.quaternion.copy(Physics.createTHREEQuat(body.quaternion))
     }
     this.step(Math.min(this.clock.getDelta(), 0.1));
+    console.log(this.player.body.velocity);
   };
   loop = (): void => {
     requestAnimationFrame(this.loop);

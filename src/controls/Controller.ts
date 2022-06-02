@@ -1,4 +1,5 @@
 import { Vector3 } from 'three';
+import { Physics } from '../Physics';
 import { Player } from '../Player';
 import { KeyboardMovementHandler } from './KeyboardMovementHandler';
 
@@ -26,8 +27,9 @@ export class Controller {
       .multiplyScalar(this.player.data.walking);
     forward.y = 0;
     if (this.player.floor && movement.y > 0)
-      this.player.velocity.y += this.player.data.jump;
-    this.player.position.add(forward);
+      this.player.body.velocity.y += this.player.data.jump;
+    this.player.body.velocity.x += forward.x;
+    this.player.body.velocity.z += forward.z;
   };
   loop = (): void => {
     this.update();
