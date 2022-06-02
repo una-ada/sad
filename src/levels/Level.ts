@@ -1,4 +1,4 @@
-import { Body, Cylinder } from 'cannon-es';
+import { Body, ContactMaterial, Cylinder, Material } from 'cannon-es';
 import {
   AmbientLight,
   Color,
@@ -31,10 +31,8 @@ export class Level extends Scene {
     this.add(scatter);
 
     /*----- Ground -----------------------------------------------------------*/
-    var groundGeometry = new PlaneGeometry(600, 600),
-      groundShape = Physics.createPrimitive(groundGeometry),
-      groundMesh = new Mesh(
-        groundGeometry,
+    var ground = new Mesh(
+        new PlaneGeometry(600, 600),
         new MeshStandardMaterial({
           color: 0xffc8c8,
           roughness: 1,
@@ -42,14 +40,18 @@ export class Level extends Scene {
           emissive: 0,
         })
       ),
-      groundBody = new Body({ mass: 0 });
-    groundMesh.position.y = 0;
-    groundMesh.rotation.x = -Math.PI / 2;
-    groundMesh.receiveShadow = true;
-    groundBody.addShape(groundShape);
-    this.add(groundMesh);
+      groundBody = new Body({
+        mass: 0,
+        material: Physics.material,
+        shape: Physics.createPrimitive(ground.geometry),
+        type: Body.STATIC,
+      });
+    ground.position.y = 0;
+    ground.rotation.x = -Math.PI / 2;
+    ground.receiveShadow = true;
+    this.add(ground);
     this.physics.addBody(groundBody);
-    this.physics.attachBody(groundMesh, groundBody);
+    this.physics.attachBody(ground, groundBody);
 
     /*----- Player -----------------------------------------------------------*/
     this.physics.addBody(this.player.body);

@@ -55,9 +55,11 @@ import { mergeVertices } from 'three/examples/jsm/utils/BufferGeometryUtils';
 import {
   Body,
   Box,
+  ContactMaterial,
   ConvexPolyhedron,
   Cylinder,
   GSSolver,
+  Material,
   NaiveBroadphase,
   Plane,
   Quaternion as CannonQuat,
@@ -68,13 +70,16 @@ import {
 } from 'cannon-es';
 
 export class Physics extends World {
-  player: Player;
-  clock: Clock;
-  world: World;
-  attachments: {
+  /*----- Class Variables ----------------------------------------------------*/
+  public static material: Material = new Material('physicsMaterial');
+  private attachments: {
     mesh: Object3D<Event>;
     body: Body;
   }[];
+  private clock: Clock;
+  public player: Player;
+
+  /*----- Constructor --------------------------------------------------------*/
   constructor(player: Player, iterations: number) {
     super({
       gravity: new Vec3(0, -9.81, 0),
@@ -82,14 +87,21 @@ export class Physics extends World {
       broadphase: new NaiveBroadphase(),
     });
     (this.solver as GSSolver).iterations = iterations;
-    this.player = player;
     this.attachments = [];
     this.clock = new Clock();
+    this.addContactMaterial(
+      new ContactMaterial(Physics.material, Physics.material, {
+        friction: 0.1,
+        restitution: 0.7,
+      })
+    );
+    this.player = player;
   }
   update = (): void => {
-    for(let {mesh, body} of this.attachments) {
+    for (let { mesh, body } of this.attachments) {
       mesh.position.copy(Physics.createVector3(body.position));
-      mesh.quaternion.copy(Physics.createTHREEQuat(body.quaternion))
+      if (mesh !== this.player)
+        mesh.quaternion.copy(Physics.createTHREEQuat(body.quaternion));
     }
     this.step(Math.min(this.clock.getDelta(), 0.1));
     console.log(this.player.body.velocity);

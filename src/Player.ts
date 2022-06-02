@@ -1,5 +1,6 @@
 import { Body, Cylinder } from 'cannon-es';
 import { PerspectiveCamera, Vector3 } from 'three';
+import { Physics } from './Physics';
 import { PlayerData } from './PlayerData';
 
 /**
@@ -19,7 +20,7 @@ export class Player extends PerspectiveCamera {
       jump: 1,
       radius: 0.1,
       step: 0.5,
-      walking: 1,
+      walking: 0.5,
     };
     this.position.set(2, this.data.height, 4);
     this.rotation.set(0, 0, 0);
@@ -28,9 +29,12 @@ export class Player extends PerspectiveCamera {
     this.floor = true;
 
     this.body = new Body({
-      mass: 5,
-      shape: new Cylinder(0.5, 0.5, 2),
+      allowSleep: false,
       linearDamping: 0.9,
+      mass: 5,
+      material: Physics.material,
+      shape: new Cylinder(0.5, 0.5, 2),
+      type: Body.DYNAMIC,
     });
   }
 
