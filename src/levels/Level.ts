@@ -1,4 +1,4 @@
-import { Body } from 'cannon-es';
+import { Body, Cylinder } from 'cannon-es';
 import {
   AmbientLight,
   Color,
@@ -42,7 +42,7 @@ export class Level extends Scene {
           emissive: 0,
         })
       ),
-      groundBody = new Body({mass: 0});
+      groundBody = new Body({ mass: 0 });
     groundMesh.position.y = 0;
     groundMesh.rotation.x = -Math.PI / 2;
     groundMesh.receiveShadow = true;
@@ -50,5 +50,12 @@ export class Level extends Scene {
     this.add(groundMesh);
     this.physics.addBody(groundBody);
     this.physics.attachBody(groundMesh, groundBody);
+
+    /*----- Player -----------------------------------------------------------*/
+    var playerShape = new Cylinder(0.5, 0.5, 2),
+      playerBody = new Body({ mass: 5 });
+    playerBody.addShape(playerShape);
+    this.physics.addBody(playerBody);
+    this.physics.attachBody(player, playerBody);
   }
 }
