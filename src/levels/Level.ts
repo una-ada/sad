@@ -1,4 +1,4 @@
-import { Body, ContactMaterial, Cylinder, Material } from 'cannon-es';
+import { Body } from 'cannon-es';
 import {
   AmbientLight,
   Color,
